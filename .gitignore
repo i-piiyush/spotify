@@ -2,6 +2,7 @@
 # Node / Backend
 # -------------------------
 node_modules/
+*.config.js
 .env
 .env.local
 .env.development.local
