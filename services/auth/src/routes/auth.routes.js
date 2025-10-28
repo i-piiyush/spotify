@@ -1,7 +1,8 @@
 import express from "express";
-import { googleAuthCallback, register } from "../controllers/auth.controller.js";
+import { getUserProfile, googleAuthCallback, register } from "../controllers/auth.controller.js";
 import { registerUserValidationRules } from "../middlewares/validation.middleware.js";
 import passport from "passport";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 router.post("/register", registerUserValidationRules, register);
@@ -19,5 +20,7 @@ router.get(
   passport.authenticate("google", { session: false }),
   googleAuthCallback
 );
+
+router.get("/getuserprofile",authMiddleware,getUserProfile)
 
 export default router;

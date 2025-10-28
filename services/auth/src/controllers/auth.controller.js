@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { publishToQueue } from "../broker/rabbit.js";
 
 export const register = async (req, res) => {
-  const { email, fullname, password } = req.body;
+  const { email, fullname, password, role } = req.body;
 
   try {
     const isUserAlreadyExists = await userModel.findOne({ email });
@@ -17,34 +17,36 @@ export const register = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const user = await userModel.create({
+    const newUser = await userModel.create({
       email: email,
       fullname: fullname,
       password: hashPassword,
-    });
+      role: role,
+    })
+
+    const user  = await userModel.findById(newUser._id).select("-password")
+    
 
     const token = jwt.sign(
       {
-        id: user._id,
-        role: user.role,
+        id: newUser._id,
+        role: newUser.role,
       },
       _config.JWT_SECRET,
       { expiresIn: "2d" }
     );
 
-    publishToQueue("user_created", {
-      email: user.email,
-      role: user.role,
-      fullname: user.fullname,
+    publishToQueue("newUser_created", {
+      email: newUser.email,
+      role: newUser.role,
+      fullname: newUser.fullname,
     });
 
     res.cookie("token", token);
 
     res.status(201).json({
-      message: "user created sucessfully",
-      email: user.email,
-      role: user.role,
-      fullname: user.fullname,
+      message: "newUser created sucessfully",
+      user:user,
     });
   } catch (error) {
     console.log(error);
@@ -77,9 +79,7 @@ export const googleAuthCallback = async (req, res) => {
     );
     res.cookie("token", token);
 
-    return res.status(200).json({
-      message: "user logged in",
-    });
+    return res.redirect("http://localhost:5173/")
   }
 
   const newUser = await userModel.create({
@@ -103,9 +103,28 @@ export const googleAuthCallback = async (req, res) => {
   });
   res.cookie("token", token);
 
-  res.status(201).json({
-    message: "new user created",
-    email: newUser.email,
-    name: newUser.fullname,
-  });
+ res.redirect("http://localhost:5173/")
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(404).json({
+        message: "no user found",
+      });
+    }
+
+    res.status(200).json({
+      message: "user fetched sucessfully",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+    });
+
+    console.log("error while fetching user: ", error);
+  }
 };
