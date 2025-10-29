@@ -22,10 +22,9 @@ export const register = async (req, res) => {
       fullname: fullname,
       password: hashPassword,
       role: role,
-    })
+    });
 
-    const user  = await userModel.findById(newUser._id).select("-password")
-    
+    const user = await userModel.findById(newUser._id).select("-password");
 
     const token = jwt.sign(
       {
@@ -42,11 +41,16 @@ export const register = async (req, res) => {
       fullname: newUser.fullname,
     });
 
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+      httpOnly: _config.NODE_ENV === "production",
+      secure: true,
+      sameSite: "none",
+    });
 
     res.status(201).json({
       message: "newUser created sucessfully",
-      user:user,
+      user: user,
     });
   } catch (error) {
     console.log(error);
@@ -79,7 +83,7 @@ export const googleAuthCallback = async (req, res) => {
     );
     res.cookie("token", token);
 
-    return res.redirect("http://localhost:5173/")
+    return res.redirect("http://localhost:5173/");
   }
 
   const newUser = await userModel.create({
@@ -103,7 +107,7 @@ export const googleAuthCallback = async (req, res) => {
   });
   res.cookie("token", token);
 
- res.redirect("http://localhost:5173/")
+  res.redirect("http://localhost:5173/");
 };
 
 export const getUserProfile = async (req, res) => {
@@ -126,5 +130,58 @@ export const getUserProfile = async (req, res) => {
     });
 
     console.log("error while fetching user: ", error);
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(404).json({
+        message: "email or password can't be empty",
+      });
+    }
+
+    const user = await userModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "invalid email",
+      });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.status(400).json({
+        message: "invalid password",
+      });
+    }
+
+    const loggedInUser = await userModel.findById(user._id).select("-password")
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      _config.JWT_SECRET,
+      { expiresIn: "2d" }
+    );
+
+    res.cookie("token", token, {
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+      httpOnly: _config.NODE_ENV === "production",
+      secure: true,
+      sameSite: "none",
+    });
+
+    res.status(200).json({
+      message: "user logged in sucessfully",
+      user:loggedInUser
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+    });
   }
 };

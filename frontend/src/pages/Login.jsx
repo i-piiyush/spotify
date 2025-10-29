@@ -1,41 +1,37 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { authApi } from "../api/authApi";
-import { useUser } from "../context/UserContext";
 import { useNavigate, Link } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
-const Signup = () => {
+const Login = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const { setUser } = useUser();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: {
-      fullname: "",
-      email: "",
-      password: "",
-      role: "user",
-    },
-  });
+  const [loginError, setLoginError] = useState("");
 
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      const res = await authApi.register(data);
-
+      setLoginError("");
+      const res = await authApi.login(data);
+      
       if (res?.data?.user) {
         setUser(res.data.user);
         navigate("/");
       }
     } catch (error) {
-      console.log("Signup error:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+      setLoginError(errorMessage);
+      setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignup = () => {
+  const handleGoogleLogin = () => {
     window.location.href = "http://localhost:3000/api/auth/google";
   };
 
@@ -51,32 +47,19 @@ const Signup = () => {
           </div>
           <h1 className="text-2xl font-semibold text-white">sasta spotify</h1>
         </div>
-        <h2 className="text-3xl font-bold text-white mb-2">Create your account</h2>
-        <p className="text-gray-400">Start listening to your favorite music</p>
+        <h2 className="text-3xl font-bold text-white mb-2">Welcome back</h2>
+        <p className="text-gray-400">Continue your musical journey</p>
       </div>
 
       {/* Form Container */}
       <div className="w-full max-w-sm">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Full Name */}
-          <div>
-            <input
-              type="text"
-              placeholder="Full name"
-              {...register("fullname", { 
-                required: "Full name is required",
-                minLength: {
-                  value: 2,
-                  message: "Name must be at least 2 characters"
-                }
-              })}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200"
-            />
-            {errors.fullname && (
-              <p className="mt-1 text-sm text-red-400">{errors.fullname.message}</p>
-            )}
+        {loginError && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-red-400 text-sm text-center">{loginError}</p>
           </div>
+        )}
 
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Email */}
           <div>
             <input
@@ -102,11 +85,7 @@ const Signup = () => {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               {...register("password", { 
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters"
-                }
+                required: "Password is required"
               })}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200 pr-12"
             />
@@ -131,16 +110,7 @@ const Signup = () => {
             )}
           </div>
 
-          {/* Role Selection */}
-          <div>
-            <select
-              {...register("role")}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200"
-            >
-              <option value="user">Listener</option>
-              <option value="artist">Artist</option>
-            </select>
-          </div>
+        
 
           {/* Submit Button */}
           <button
@@ -151,10 +121,10 @@ const Signup = () => {
             {loading ? (
               <div className="flex items-center justify-center">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                Creating account...
+                Signing in...
               </div>
             ) : (
-              "Create account"
+              "Sign in"
             )}
           </button>
         </form>
@@ -169,9 +139,9 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Google Signup */}
+        {/* Google Login */}
         <button
-          onClick={handleGoogleSignup}
+          onClick={handleGoogleLogin}
           className="w-full bg-gray-800 hover:bg-gray-750 text-white font-medium py-3 px-4 rounded-lg border border-gray-700 transition duration-200 flex items-center justify-center gap-3"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -183,15 +153,15 @@ const Signup = () => {
           Continue with Google
         </button>
 
-        {/* Login Link */}
+        {/* Signup Link */}
         <div className="text-center mt-6">
           <p className="text-gray-400">
-            Already have an account?{" "}
+            Don't have an account?{" "}
             <Link 
-              to="/login" 
+              to="/signup" 
               className="text-emerald-400 hover:text-emerald-300 font-medium transition duration-200"
             >
-              Sign in
+              Sign up
             </Link>
           </p>
         </div>
@@ -205,4 +175,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
