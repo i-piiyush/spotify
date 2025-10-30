@@ -15,7 +15,7 @@ const AppRoutes = () => {
         {/* protected routes */}
         <Route
           path="/"
-          element={user ? <Home /> : <Navigate to="/signup" replace />}
+          element={user ? <Home /> : <Navigate to="/login" replace />}
         />
 
         {/* public routes */}

@@ -1,5 +1,5 @@
 import express from "express";
-import { getUserProfile, googleAuthCallback, login, register } from "../controllers/auth.controller.js";
+import { getUserProfile, googleAuthCallback, login, logout, register } from "../controllers/auth.controller.js";
 import { registerUserValidationRules } from "../middlewares/validation.middleware.js";
 import passport from "passport";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -26,5 +26,9 @@ router.get("/getuserprofile",authMiddleware,getUserProfile)
 
 // login api
 router.post("/login",login)
+
+
+router.get("/logout",logout)
+
 
 export default router;

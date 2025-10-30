@@ -137,7 +137,7 @@ const Signup = () => {
               {...register("role")}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200"
             >
-              <option value="user">Listener</option>
+              <option value="user">user</option>
               <option value="artist">Artist</option>
             </select>
           </div>
