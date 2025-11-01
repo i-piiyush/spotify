@@ -30,6 +30,7 @@ export const register = async (req, res) => {
       {
         id: newUser._id,
         role: newUser.role,
+        name: newUser.fullname,
       },
       _config.JWT_SECRET,
       { expiresIn: "2d" }
@@ -75,7 +76,11 @@ export const googleAuthCallback = async (req, res) => {
 
   if (isUserAlreadyExists) {
     const token = jwt.sign(
-      { id: isUserAlreadyExists._id, role: isUserAlreadyExists.role },
+      {
+        id: isUserAlreadyExists._id,
+        role: isUserAlreadyExists.role,
+        name: isUserAlreadyExists.fullname,
+      },
       _config.JWT_SECRET,
       {
         expiresIn: "2d",
@@ -93,7 +98,7 @@ export const googleAuthCallback = async (req, res) => {
   });
 
   const token = jwt.sign(
-    { id: newUser._id, role: newUser.role },
+    { id: newUser._id, role: newUser.role,name:newUser.fullname },
     _config.JWT_SECRET,
     {
       expiresIn: "2d",
@@ -161,9 +166,9 @@ export const login = async (req, res) => {
       });
     }
 
-    const loggedInUser = await userModel.findById(user._id).select("-password")
+    const loggedInUser = await userModel.findById(user._id).select("-password");
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, name: user.fullname },
       _config.JWT_SECRET,
       { expiresIn: "2d" }
     );
@@ -177,7 +182,7 @@ export const login = async (req, res) => {
 
     res.status(200).json({
       message: "user logged in sucessfully",
-      user:loggedInUser
+      user: loggedInUser,
     });
   } catch (error) {
     res.status(500).json({
