@@ -4,9 +4,10 @@ import Home from "../pages/Home";
 import Signup from "../pages/Signup";
 import { useUser } from "../context/UserContext";
 import Login from "../pages/Login";
+import Dashboard from "../pages/Dashboard";
 
 const AppRoutes = () => {
-  const { user,loading } = useUser();
+  const { user, loading } = useUser();
   if (loading) return <p>Loading...</p>;
 
   return (
@@ -18,16 +19,32 @@ const AppRoutes = () => {
           element={user ? <Home /> : <Navigate to="/login" replace />}
         />
 
+        <Route
+          path="/upload-music"
+          element={user ? <Dashboard />: <Navigate to="/login" replace />}
+        />
+
         {/* public routes */}
         <Route
           path="/signup"
-          element={!user ? <Signup /> : <Navigate to="/" replace />}
+          element={
+            !user ? (
+              <Signup />
+            ) : (
+              <Navigate to={user.role == "artist" ? "/upload-music" : "/"} replace />
+            )
+          }
         />
         <Route
           path="/login"
-          element={!user ? <Login />  : <Navigate to="/" replace />}
+          element={
+            !user ? (
+              <Login />
+            ) : (
+              <Navigate to={user.role == "artist" ? "/upload-music" : "/"} replace />
+            )
+          }
         />
-
       </Routes>
     </>
   );

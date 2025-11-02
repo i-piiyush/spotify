@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser());
-app.use("/api/auth", authRoutes);
+app.use("/", authRoutes);
 app.use(passport.initialize());
 passport.use(
   new GoogleStrategy(

@@ -10,6 +10,10 @@ const musicSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    genre: {
+      type: String,
+      required: true,
+    },
     musicUrl: {
       type: String,
       required: true,
