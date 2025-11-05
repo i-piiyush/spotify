@@ -76,3 +76,29 @@ export const getAllMusic = async (req, res) => {
     });
   }
 };
+export const getMusic = async (req,res) =>{
+  try {
+
+    const id = req.params.id
+
+    const music = await musicModel.findById(id)
+
+    if(!music){
+      return res.status(404).json({
+        message:"no music found"
+      })
+    }
+
+    res.status(200).json({
+      message:"music fetched successfully",
+      music
+    })
+    
+  } catch (error) {
+    console.log("error while fetching music by id: ",error);
+    res.status(500).json({
+      message:"server error"
+    })
+    
+  }
+}

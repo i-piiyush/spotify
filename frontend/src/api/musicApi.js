@@ -10,5 +10,9 @@ export const musicApi = {
 
  getMusic : ()=>{
    return axiosClient.get("/music/fetch")
+ },
+
+ getMusicById : (id) =>{
+   return axiosClient.get(`/music/${id}`)
  }
 };

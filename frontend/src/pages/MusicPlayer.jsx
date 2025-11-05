@@ -1,9 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  IoPlay, 
-  IoPause, 
-  IoPlaySkipBack, 
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  IoPlay,
+  IoPause,
+  IoPlaySkipBack,
   IoPlaySkipForward,
   IoVolumeHigh,
   IoHeart,
@@ -11,22 +11,53 @@ import {
   IoShareSocial,
   IoList,
   IoRepeat,
-  IoShuffle
-} from 'react-icons/io5';
-import { FiChevronLeft } from 'react-icons/fi';
+  IoShuffle,
+} from "react-icons/io5";
+import { FiChevronLeft } from "react-icons/fi";
+import { musicApi } from "../api/musicApi";
+import { useNavigate, useParams } from "react-router-dom";
 
 const MusicPlayer = () => {
-  // Static demo data
-  const currentTrack = {
-    title: 'Blinding Lights',
-    artist: 'The Weeknd',
-    album: 'After Hours',
+  const naviagte = useNavigate();
+  const { id } = useParams();
+  const [currentSong, setCurrentSong] = useState({
+    title: "",
+    artist: "",
     duration: 203,
-    coverArtUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop',
-    genre: 'Synthwave',
+    coverArtUrl: "",
+    genre: "",
     likes: 1250432,
-    releaseYear: 2020
-  };
+    releaseYear: null,
+  });
+
+  const convertToYear = (iso_date)=>{
+    const date = new Date(iso_date)
+    const year = date.getFullYear();
+
+    return year;
+  }
+
+  useEffect(() => {
+    const fetchMusic = async (id) => {
+      try {
+        const res = await musicApi.getMusicById(id);
+        const music = res.data.music;
+        setCurrentSong({
+          ...currentSong,
+          title: music.title,
+          artist: music.artist,
+          coverArtUrl: music.coverArtUrl,
+          genre: music.genre,
+          releaseYear:convertToYear(music.createdAt)
+        });
+        console.log(res.data.music);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMusic(id);
+  }, []);
 
   // Static UI states
   const isPlaying = true;
@@ -39,7 +70,7 @@ const MusicPlayer = () => {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
   return (
@@ -47,7 +78,12 @@ const MusicPlayer = () => {
       {/* Header */}
       <div className="p-6">
         <button className="p-2 hover:bg-gray-800 rounded-full transition-colors">
-          <FiChevronLeft className="text-2xl" />
+          <FiChevronLeft
+            className="text-2xl"
+            onClick={() => {
+              naviagte(-1);
+            }}
+          />
         </button>
       </div>
 
@@ -61,8 +97,8 @@ const MusicPlayer = () => {
           >
             <div className="relative">
               <img
-                src={currentTrack.coverArtUrl}
-                alt={currentTrack.title}
+                src={currentSong.coverArtUrl}
+                alt={currentSong.title}
                 className="w-80 h-80 lg:w-96 lg:h-96 rounded-3xl shadow-2xl object-cover"
               />
               <div className="absolute inset-0 rounded-3xl shadow-2xl border-2 border-white/10"></div>
@@ -80,23 +116,23 @@ const MusicPlayer = () => {
             <div className="space-y-4">
               <div>
                 <h1 className="text-5xl lg:text-6xl font-bold mb-4">
-                  {currentTrack.title}
+                  {currentSong.title}
                 </h1>
                 <p className="text-2xl text-gray-300 mb-2">
-                  {currentTrack.artist}
+                  {currentSong.artist}
                 </p>
                 <p className="text-gray-400">
-                  {currentTrack.album} • {currentTrack.releaseYear}
+                  {currentSong.album} • {currentSong.releaseYear}
                 </p>
               </div>
 
               {/* Genre & Likes */}
               <div className="flex items-center space-x-4">
                 <span className="px-3 py-1 bg-gray-800 rounded-full text-sm text-gray-300">
-                  {currentTrack.genre}
+                  {currentSong.genre}
                 </span>
                 <span className="text-gray-400 text-sm">
-                  {currentTrack.likes.toLocaleString()} likes
+                  {currentSong.likes.toLocaleString()} likes
                 </span>
               </div>
             </div>
@@ -104,7 +140,7 @@ const MusicPlayer = () => {
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="w-full h-1 bg-gray-700 rounded-lg relative">
-                <div 
+                <div
                   className="h-1 bg-white rounded-lg absolute top-0 left-0"
                   style={{ width: `${progress}%` }}
                 ></div>
@@ -167,7 +203,7 @@ const MusicPlayer = () => {
               <div className="flex items-center space-x-3">
                 <IoVolumeHigh className="text-xl text-gray-400" />
                 <div className="w-24 h-1 bg-gray-700 rounded-lg relative">
-                  <div 
+                  <div
                     className="h-1 bg-white rounded-lg absolute top-0 left-0"
                     style={{ width: `${volume}%` }}
                   ></div>
@@ -188,7 +224,7 @@ const MusicPlayer = () => {
           <div className="space-y-4">
             {/* Next Track 1 */}
             <div className="flex items-center space-x-4 p-3 hover:bg-gray-800 rounded-lg transition-colors">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1571974599782-87624638275f?w=100&h=100&fit=crop"
                 alt="Next track"
                 className="w-12 h-12 rounded-lg object-cover"
@@ -202,7 +238,7 @@ const MusicPlayer = () => {
 
             {/* Next Track 2 */}
             <div className="flex items-center space-x-4 p-3 hover:bg-gray-800 rounded-lg transition-colors">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=100&h=100&fit=crop"
                 alt="Next track"
                 className="w-12 h-12 rounded-lg object-cover"
