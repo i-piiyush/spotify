@@ -3,8 +3,10 @@ import { useForm } from "react-hook-form";
 import Navbar from "../components/Navbar";
 import { musicApi } from "../api/musicApi";
 import toast from "react-hot-toast";
+import { useUser } from "../context/UserContext";
 
 const Dashboard = () => {
+  const {user} = useUser()
   const {
     register,
     handleSubmit,
@@ -153,7 +155,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <Navbar user={{ role: "artist" }} />
+      <Navbar user={{ role: user.role }} />
 
       <div className="max-w-2xl mx-auto px-6 py-8">
         {/* Header */}

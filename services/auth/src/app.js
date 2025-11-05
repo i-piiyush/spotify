@@ -25,7 +25,7 @@ passport.use(
     {
       clientID: _config.CLIENT_ID,
       clientSecret: _config.CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback",
+      callbackURL: "http://localhost:3000/api/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
       // Here, you would typically find or create a user in your database

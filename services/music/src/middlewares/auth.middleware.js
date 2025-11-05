@@ -36,3 +36,19 @@ export const artsistMiddleware = async (req,res,next)=>{
         
     }
 }
+export const authMiddleware = async (req,res,next) => {
+    const token = req.cookies.token;
+    if (!token){return res.status(401).json({
+        message:"unauthorized"
+    })}
+
+    const decoded = jwt.verify(token,_config.JWT_SECRET);
+
+    if(!decoded){
+        res.status(401).json({
+            message:"invalid token"
+        })
+    }
+
+    next()
+}

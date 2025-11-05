@@ -1,7 +1,7 @@
 import express from "express";
-import { musicUpload } from "../controllers/music.controller.js";
+import { getAllMusic, musicUpload } from "../controllers/music.controller.js";
 import multer from "multer";
-import { artsistMiddleware } from "../middlewares/auth.middleware.js";
+import { artsistMiddleware, authMiddleware } from "../middlewares/auth.middleware.js";
 const upload = multer({
   storage: multer.memoryStorage(),
 });
@@ -17,3 +17,5 @@ router.post(
   ]),
   musicUpload
 );
+
+router.get("/fetch",authMiddleware,getAllMusic);

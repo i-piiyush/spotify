@@ -6,5 +6,9 @@ export const musicApi = {
        headers: { "Content-Type": "multipart/form-data" },
     });
     
+ },
+
+ getMusic : ()=>{
+   return axiosClient.get("/music/fetch")
  }
 };

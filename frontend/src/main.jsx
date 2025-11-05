@@ -3,11 +3,14 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserContext.jsx";
+import { MusicProvider } from "./context/MusicContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <UserProvider>
-      <App />
+      <MusicProvider>
+        <App />
+      </MusicProvider>
     </UserProvider>
   </BrowserRouter>
 );

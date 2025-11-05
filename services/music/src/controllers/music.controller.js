@@ -54,3 +54,25 @@ export const musicUpload = async (req, res) => {
     });
   }
 };
+
+export const getAllMusic = async (req, res) => {
+  try {
+
+    const music = await musicModel.find().sort({createdAt:-1});
+    if(!music){
+      return res.status(404).json({
+        message:"no music has yet being uploaded"
+      })
+    }
+
+    res.status(200).json({
+      message:"music fetched successfully",
+      music
+    })
+  } catch (error) {
+    console.log("error fetching music", error);
+    res.status(500).json({
+      message: "server error",
+    });
+  }
+};
