@@ -22,15 +22,3 @@ export const publishToQueue = async (queue_name, data) => {
     console.log("Error publishing to queue :", error);
   }
 };
-
-export const subscribeToQueue = async (queue_name, callback) => {
-  try {
-    await channel.assertQueue(queue_name, { durable: true });
-    await channel.consume(queue_name, async (msg) => {
-      await callback(JSON.parse(msg.content.toString()));
-      await channel.ack(msg);
-    });
-  } catch (error) {
-    console.log("error subscribing to queue: ", error);
-  }
-};

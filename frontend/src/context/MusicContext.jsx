@@ -6,6 +6,7 @@ const MusicContext = createContext();
 export const MusicProvider = ({ children }) => {
   const [music, setMusic] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLiked,setIsLiked] = useState(false)
 
   useEffect(() => {
     const fetchMusic = async () => {
@@ -26,7 +27,7 @@ export const MusicProvider = ({ children }) => {
   }, []);
 
   return (
-    <MusicContext.Provider value={{ music, loading }}>
+    <MusicContext.Provider value={{ music, loading,isLiked,setIsLiked }}>
       {children}
     </MusicContext.Provider>
   );

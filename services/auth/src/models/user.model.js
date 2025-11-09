@@ -21,7 +21,13 @@ role:{
     enum:["user","artist"],
     default:"user"
 
-}
+},
+likedSongs: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Song"
+  }
+]
 },{
     timestamps:true
 })

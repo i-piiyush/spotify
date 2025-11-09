@@ -5,7 +5,7 @@ import Signup from "../pages/Signup";
 import { useUser } from "../context/UserContext";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
-import MusicPlayer from "../pages/MusicPlayer";
+
 
 const AppRoutes = () => {
   const { user, loading } = useUser();
@@ -26,10 +26,6 @@ const AppRoutes = () => {
         />
 
 
-        <Route
-          path="/play/:id"
-          element={user ? <MusicPlayer />: <Navigate to="/login" replace />}
-        />
 
         {/* public routes */}
         <Route

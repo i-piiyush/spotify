@@ -6,6 +6,15 @@ const musicSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    likedBy:[{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Users"
+      
+    }],
+    isLiked:{
+      type:Boolean,
+      default:false
+    },
     title: {
       type: String,
       required: true,

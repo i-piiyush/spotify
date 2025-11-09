@@ -1,18 +1,21 @@
 import { axiosClient } from "./axiosClient";
 
 export const musicApi = {
- uploadMusic : (data)=>{
-    return axiosClient.post("/music",data,{
-       headers: { "Content-Type": "multipart/form-data" },
+  uploadMusic: (data) => {
+    return axiosClient.post("/music", data, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    
- },
+  },
 
- getMusic : ()=>{
-   return axiosClient.get("/music/fetch")
- },
+  getMusic: () => {
+    return axiosClient.get("/music/fetch");
+  },
 
- getMusicById : (id) =>{
-   return axiosClient.get(`/music/${id}`)
- }
+  getMusicById: (id) => {
+    return axiosClient.get(`/music/${id}`);
+  },
+
+  likeMusic: (id) => {
+    return axiosClient.patch(`/music/${id}/like`);
+  },
 };
