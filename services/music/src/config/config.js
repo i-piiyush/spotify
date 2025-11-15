@@ -8,7 +8,8 @@ const _config = {
   IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
   IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
   IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT,
-  RABBITMQ_URI: process.env.RABBITMQ_URI
+  RABBITMQ_URI: process.env.RABBITMQ_URI,
+  FRONTEND_URL:process.env.FRONTEND_URL
 };
 
 export default _config;
