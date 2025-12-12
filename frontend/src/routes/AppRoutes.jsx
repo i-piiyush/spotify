@@ -6,6 +6,7 @@ import { useUser } from "../context/UserContext";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import { io } from "socket.io-client";
+import Player from "../pages/Player";
 
 const AppRoutes = () => {
   const { user, loading } = useUser();
@@ -14,6 +15,14 @@ const AppRoutes = () => {
 
   useEffect(() => {
     const newSocket = io(`http://localhost:3003`, { withCredentials: true });
+    setSocket(newSocket)
+
+    newSocket.on("play",(data)=>{
+      const musicId = data;
+      
+      window.location.href = `music/${musicId}`
+      
+    })
   }, []);
   if (loading) return <p>Loading...</p>;
 
@@ -23,8 +32,10 @@ const AppRoutes = () => {
         {/* protected routes */}
         <Route
           path="/"
-          element={user ? <Home /> : <Navigate to="/login" replace />}
+          element={user ? <Home socket={socket} /> : <Navigate to="/login" replace />}
         />
+
+        <Route path="/music/:id"  element={user ? <Player /> : <Navigate to="/login" replace />} />
 
         <Route
           path="/upload-music"

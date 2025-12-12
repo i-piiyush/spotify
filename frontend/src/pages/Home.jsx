@@ -9,82 +9,22 @@ import { AiFillHeart } from "react-icons/ai";
 import { useEffect, useState, useRef } from "react";
 import { musicApi } from "../api/musicApi";
 
-const Home = () => {
+const Home = ({ socket }) => {
   const { user } = useUser();
   const { music, loading } = useMusic();
   const [isLiked, setIsLiked] = useState({});
   const [activeTab, setActiveTab] = useState("all");
-  const [isPlaying, setIsPlaying] = useState(null);
-  const [showPlayer, setShowPlayer] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const audioRef = useRef(null);
 
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const initialLikes = {};
-    music.forEach((track) => {
+    (music || []).forEach((track) => {
       initialLikes[track._id] = track.isLiked || false;
     });
     setIsLiked(initialLikes);
   }, [music]);
-
-  // Audio event handlers
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const updateProgress = () => {
-      setCurrentTime(audio.currentTime);
-      setProgress((audio.currentTime / audio.duration) * 100);
-    };
-
-    const setAudioData = () => {
-      setDuration(audio.duration);
-    };
-
-    audio.addEventListener('timeupdate', updateProgress);
-    audio.addEventListener('loadedmetadata', setAudioData);
-    audio.addEventListener('ended', handleAudioEnd);
-
-    return () => {
-      audio.removeEventListener('timeupdate', updateProgress);
-      audio.removeEventListener('loadedmetadata', setAudioData);
-      audio.removeEventListener('ended', handleAudioEnd);
-    };
-  }, [currentTrack]);
-
-  const handleAudioEnd = () => {
-    setIsPlaying(null);
-    setProgress(0);
-    setCurrentTime(0);
-  };
-
-  const handleProgressClick = (e) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const clickTime = (clickX / width) * audio.duration;
-
-    audio.currentTime = clickTime;
-    setProgress((clickTime / audio.duration) * 100);
-    setCurrentTime(clickTime);
-  };
-
-  const formatTime = (time) => {
-    if (isNaN(time)) return "0:00";
-    
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
 
   const handleLike = async (id) => {
     try {
@@ -92,7 +32,7 @@ const Home = () => {
         ...prev,
         [id]: !prev[id],
       }));
-      
+
       const res = await musicApi.likeMusic(id);
       console.log(res.data.message);
     } catch (error) {
@@ -105,33 +45,10 @@ const Home = () => {
     }
   };
 
-  const handlePlay = (track) => {
-    setCurrentTrack(track);
-    setIsPlaying(track._id);
-    setShowPlayer(true);
-    
-    // Reset progress when starting a new track
-    setProgress(0);
-    setCurrentTime(0);
-    
-    // Small delay to ensure audio element is ready
-    setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.play().catch(error => {
-          console.log("Audio play failed:", error);
-        });
-      }
-    }, 100);
-  };
+  const likedMusic = (music || []).filter((track) =>
+    Boolean(isLiked?.[track._id])
+  );
 
-  const handlePause = () => {
-    setIsPlaying(null);
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-  };
-
-  const likedMusic = music.filter(track => isLiked[track._id]);
   const displayMusic = activeTab === "liked" ? likedMusic : music;
 
   const containerVariants = {
@@ -151,7 +68,7 @@ const Home = () => {
       opacity: 1,
       transition: {
         duration: 0.4,
-        ease: "easeOut"
+        ease: "easeOut",
       },
     },
   };
@@ -192,13 +109,6 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white pb-24">
       <Navbar user={{ role: user.role }} />
 
-      {/* Audio element for playback */}
-      <audio 
-        ref={audioRef} 
-        src={currentTrack?.musicUrl} 
-        preload="metadata"
-      />
-
       <main className="p-4 max-w-7xl mx-auto">
         {/* Header with Welcome */}
         <motion.div
@@ -207,7 +117,7 @@ const Home = () => {
           className="mb-6"
         >
           <h1 className="text-2xl font-bold text-white mb-1">
-            Welcome back, {user?.fullname?.split(' ')[0] || "Listener"} 👋
+            Welcome back, {user?.fullname?.split(" ")[0] || "Listener"} 👋
           </h1>
           <p className="text-gray-400 text-sm">
             Ready to discover some amazing music?
@@ -279,14 +189,13 @@ const Home = () => {
                         className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-2xl hover:bg-green-400 transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
-                          isPlaying === track._id ? handlePause() : handlePlay(track);
+                          socket?.emit("play", { musicId: track._id });
+                          navigate(`music/${track._id}`);
                         }}
                       >
-                        {isPlaying === track._id ? (
-                          <IoMdPause className="text-white text-xl" />
-                        ) : (
+                       
                           <IoMdPlay className="text-white text-xl ml-1" />
-                        )}
+                      
                       </motion.button>
                     </motion.div>
 
@@ -333,14 +242,8 @@ const Home = () => {
                     </div>
                   </div>
 
-                  {/* Active Playing Indicator */}
-                  {isPlaying === track._id && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"
-                    />
-                  )}
+                
+                 
                 </motion.div>
               ))
             ) : (
@@ -351,11 +254,13 @@ const Home = () => {
               >
                 <FiMusic className="text-gray-500 text-4xl mx-auto mb-4" />
                 <div className="text-gray-400 text-lg">
-                  {activeTab === "liked" ? "No liked songs yet" : "No music available"}
+                  {activeTab === "liked"
+                    ? "No liked songs yet"
+                    : "No music available"}
                 </div>
                 <p className="text-gray-500 mt-2 text-sm">
-                  {activeTab === "liked" 
-                    ? "Start liking songs to see them here!" 
+                  {activeTab === "liked"
+                    ? "Start liking songs to see them here!"
                     : "Artists haven't uploaded any music yet."}
                 </p>
               </motion.div>
@@ -363,86 +268,6 @@ const Home = () => {
           </motion.div>
         </AnimatePresence>
       </main>
-
-      {/* Bottom Player Bar */}
-      <AnimatePresence>
-        {showPlayer && currentTrack && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-lg border-t border-gray-700"
-          >
-            {/* Progress Bar */}
-            <div 
-              className="w-full h-1 bg-gray-600 cursor-pointer"
-              onClick={handleProgressClick}
-            >
-              <motion.div 
-                className="h-full bg-green-500 transition-all duration-100"
-                style={{ width: `${progress}%` }}
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-              />
-            </div>
-
-            <div className="p-4 max-w-7xl mx-auto">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3 flex-1 min-w-0">
-                  <img
-                    src={currentTrack.coverArtUrl}
-                    alt={currentTrack.title}
-                    className="w-12 h-12 rounded-lg object-cover"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-white font-medium text-sm truncate">
-                      {currentTrack.title}
-                    </h4>
-                    <p className="text-gray-400 text-xs truncate">
-                      {currentTrack.artist}
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Time Display */}
-                <div className="flex items-center space-x-2 mx-4">
-                  <span className="text-xs text-gray-400 min-w-[35px]">
-                    {formatTime(currentTime)}
-                  </span>
-                  <span className="text-xs text-gray-500">/</span>
-                  <span className="text-xs text-gray-400 min-w-[35px]">
-                    {formatTime(duration)}
-                  </span>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => handleLike(currentTrack._id)}
-                    className="p-2"
-                  >
-                    {isLiked[currentTrack._id] ? (
-                      <AiFillHeart className="text-green-500 text-xl" />
-                    ) : (
-                      <FiHeart className="text-gray-400 text-xl hover:text-green-500 transition-colors" />
-                    )}
-                  </button>
-                  
-                  <button
-                    onClick={isPlaying ? handlePause : () => handlePlay(currentTrack)}
-                    className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-400 transition-colors shadow-lg"
-                  >
-                    {isPlaying ? (
-                      <IoMdPause className="text-white text-lg" />
-                    ) : (
-                      <IoMdPlay className="text-white text-lg ml-1" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

@@ -34,13 +34,15 @@ io.use((socket,next)=>{
 })
 
 io.on("connection",(socket)=>{
-    console.log("user connected: ",socket.user.id);
+    console.log("user connected: ",socket.user.name);
     
     socket.join(socket.user.id);
 
     socket.on("play",(data)=>{
         const musicId = data.musicId;
-        socket.broadcast.to(socket.user.id).emit("play: ",musicId)
+        console.log(data);
+        
+        socket.broadcast.to(socket.user.id).emit("play",musicId)
     })
 
     socket.on("disconnect",()=>{
