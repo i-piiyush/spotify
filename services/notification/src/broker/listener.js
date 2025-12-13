@@ -22,7 +22,7 @@ export const startListener = () => {
         </div>
       </div>
       <h1 style="color: #ffffff; font-size: 32px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: -0.5px;">Welcome, ${fullname}</h1>
-      <p style="color: #1DB954; font-size: 16px; font-weight: 500; margin: 0; letter-spacing: 1px;">SASTA SPOTIFY</p>
+      <p style="color: #1DB954; font-size: 16px; font-weight: 500; margin: 0; letter-spacing: 1px;">Decibel</p>
     </div>
 
     <!-- Role Badge -->
@@ -65,10 +65,10 @@ export const startListener = () => {
     <!-- Footer -->
     <div style="border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 30px;">
       <p style="font-size: 13px; color: #8e8e93; text-align: center; margin: 0 0 8px 0; line-height: 1.5; font-weight: 400;">
-        If you didn't sign up for Sasta Spotify, please disregard this email.
+        If you didn't sign up for Decibel, please disregard this email.
       </p>
       <p style="font-size: 11px; color: #636366; text-align: center; margin: 0; letter-spacing: 0.3px;">
-        © 2024 Sasta Spotify Premium. All rights reserved.
+        © 2024 Decibel Premium. All rights reserved.
       </p>
     </div>
   </div>
@@ -78,8 +78,8 @@ export const startListener = () => {
 
     await sendEmail(
       email,
-      "welcome to Sasta Spotify",
-      "welcome to Sasta Spotify",
+      "welcome to Decibel",
+      "welcome to Decibel",
       template
     );
   });

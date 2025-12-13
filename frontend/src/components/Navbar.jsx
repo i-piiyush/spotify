@@ -33,9 +33,9 @@ const Navbar = ({ user }) => {
         {/* Brand Name */}
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-md">
-            <span className="font-bold text-white text-sm">M</span>
+            <span className="font-bold text-white text-sm">D</span>
           </div>
-          <span className="text-xl font-semibold text-white">mybrand</span>
+          <span className="text-xl font-semibold text-white">Decibel</span>
         </div>
 
         {/* Settings Dropdown */}
