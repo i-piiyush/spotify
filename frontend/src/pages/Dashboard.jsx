@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import Navbar from "../components/Navbar";
 import { musicApi } from "../api/musicApi";
 import toast from "react-hot-toast";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../hooks/useUser";
 
 const Dashboard = () => {
   const {user} = useUser()
@@ -13,7 +13,7 @@ const Dashboard = () => {
     formState: { errors },
     watch,
     setValue,
-    reset,
+   
   } = useForm();
   const [coverPreview, setCoverPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);

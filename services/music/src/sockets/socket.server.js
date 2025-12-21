@@ -7,8 +7,9 @@ import cookie from "cookie"
 export const initSocketServer = (httpServer)=>{
 const io = new Server(httpServer,{
     cors:{
-        origin:_config.FRONTEND_URL,
-        credentials:true
+        origin:true,
+        credentials:true,
+         methods: ["GET", "POST"],
     }
 })
 

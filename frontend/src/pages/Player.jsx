@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { useMusic } from "../context/MusicContext";
+import { useMusic } from "../hooks/useMusic";
 import {
   FaPlay,
   FaPause,
@@ -87,27 +87,26 @@ const Player = () => {
   }, [currentMusic]);
 
   /* ----------- TIME SYNC (THE FIX) ----------- */
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+useEffect(() => {
+  const audio = audioRef.current;
+  if (!audio || !currentMusic) return;
 
-    const onTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-    };
+  const onTimeUpdate = () => {
+    setCurrentTime(audio.currentTime);
+  };
 
-    const onEnded = () => {
-      setIsPlaying(false);
-    };
+  const onEnded = () => {
+    setIsPlaying(false);
+  };
 
-    audio.addEventListener("timeupdate", onTimeUpdate);
-    audio.addEventListener("ended", onEnded);
+  audio.addEventListener("timeupdate", onTimeUpdate);
+  audio.addEventListener("ended", onEnded);
 
-    return () => {
-      audio.removeEventListener("timeupdate", onTimeUpdate);
-      audio.removeEventListener("ended", onEnded);
-    };
-  }, []);
-
+  return () => {
+    audio.removeEventListener("timeupdate", onTimeUpdate);
+    audio.removeEventListener("ended", onEnded);
+  };
+}, [currentMusic])
   /* ----------- VOLUME ----------- */
   useEffect(() => {
     if (audioRef.current) {

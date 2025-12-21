@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../api/authApi.js";
-import { useUser } from "../context/UserContext.jsx";
+import { useUser } from "../hooks/useUser.js";
 import toast from "react-hot-toast";
 const Navbar = ({ user }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

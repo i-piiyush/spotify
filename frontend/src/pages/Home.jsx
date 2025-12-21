@@ -1,12 +1,12 @@
-import { IoMdPlay, IoMdPause } from "react-icons/io";
+import { IoMdPlay, } from "react-icons/io";
 import { FiHeart, FiMusic } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence,motion } from "framer-motion";
 import Navbar from "../components/Navbar";
-import { useMusic } from "../context/MusicContext";
-import { useUser } from "../context/UserContext";
+import { useMusic } from "../hooks/useMusic";
+import { useUser } from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { AiFillHeart } from "react-icons/ai";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState} from "react";
 import { musicApi } from "../api/musicApi";
 
 const Home = ({ socket }) => {
@@ -155,7 +155,7 @@ const Home = ({ socket }) => {
             animate="visible"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
-            {displayMusic.length > 0 ? (
+            {displayMusic.length || [] > 0 ? (
               displayMusic.map((track) => (
                 <motion.div
                   key={track._id}

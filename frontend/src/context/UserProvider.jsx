@@ -1,7 +1,6 @@
-import { createContext, useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
+import { UserContext } from "./UserContext";
 import { authApi } from "../api/authApi";
-
-const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -11,24 +10,21 @@ export const UserProvider = ({ children }) => {
     const getUser = async () => {
       try {
         const res = await authApi.getUserProfile();
-
         setUser(res.data.user);
-
-        console.log(res.data.user);
       } catch (error) {
-        console.log("error fetching user ", error.response);
+        console.log("error fetching user", error?.response);
         setUser(null);
       } finally {
         setLoading(false);
       }
     };
+
     getUser();
   }, []);
+
   return (
     <UserContext.Provider value={{ user, loading, setUser }}>
       {children}
     </UserContext.Provider>
   );
 };
-
-export const useUser = () => useContext(UserContext);

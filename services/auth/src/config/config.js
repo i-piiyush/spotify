@@ -7,7 +7,8 @@ const _config = {
   CLIENT_ID : process.env.CLIENT_ID,
   CLIENT_SECRET : process.env.CLIENT_SECRET,
   RABBITMQ_URI : process.env.RABBITMQ_URI,
-  NODE_ENV : process.env.NODE_ENV
+  NODE_ENV : process.env.NODE_ENV,
+  FRONTEND_URL :process.env.FRONTEND_URL
 };
 
 export default _config;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { authApi } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../hooks/useUser";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();

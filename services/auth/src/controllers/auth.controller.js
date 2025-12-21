@@ -88,7 +88,7 @@ export const googleAuthCallback = async (req, res) => {
     );
     res.cookie("token", token);
 
-    return res.redirect("http://localhost:5173/");
+    return res.redirect(`${_config.FRONTEND_URL}/` ?? "http://localhost:5173/");
   }
 
   const newUser = await userModel.create({
@@ -112,7 +112,7 @@ export const googleAuthCallback = async (req, res) => {
   });
   res.cookie("token", token);
 
-  res.redirect("http://localhost:5173/");
+  res.redirect(`${_config.FRONTEND_URL}/` ?? "http://localhost:5173/");
 };
 
 export const getUserProfile = async (req, res) => {
@@ -152,6 +152,8 @@ export const login = async (req, res) => {
       email: email,
     });
 
+    console.log(user,email)
+
     if (!user) {
       return res.status(400).json({
         message: "invalid email",
@@ -185,6 +187,9 @@ export const login = async (req, res) => {
       user: loggedInUser,
     });
   } catch (error) {
+
+    console.log(error);
+    
     res.status(500).json({
       message: "server error",
     });

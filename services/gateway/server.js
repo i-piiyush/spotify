@@ -2,13 +2,14 @@ import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import cors from "cors";
 import morgan from "morgan";
+import _config from "./src/config/config.js";
 
 const app = express();
 
 // ✅ Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend
+    origin:true , 
     credentials: true,
   })
 );
